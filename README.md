@@ -1,0 +1,1 @@
+# 2026-Autumn-Software-Testing-and-Quality-Assurance-Practices
