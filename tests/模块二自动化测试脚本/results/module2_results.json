@@ -1,0 +1,124 @@
+{
+  "generated_at": "2026-09-13T14:48:38+08:00",
+  "source": "cascading-spy-sheets-main",
+  "scope": "模块二浏览器扩展源级自动化检查；Firefox 浏览器集成结果需另行人工复核",
+  "summary": {
+    "total": 16,
+    "OK": 10,
+    "NG": 6
+  },
+  "results": [
+    {
+      "case_id": "M2-01",
+      "title": "Firefox 临时安装扩展前的 manifest 完整性",
+      "status": "OK",
+      "actual": "manifest_version=2，permissions=['<all_urls>', 'activeTab', 'webRequest', 'webRequestBlocking']",
+      "expected": "Manifest V2、background.js 已注册，且四项必要权限齐全。"
+    },
+    {
+      "case_id": "M2-02",
+      "title": "content script 注入范围与时机",
+      "status": "OK",
+      "actual": "content_scripts=[{'matches': ['<all_urls>'], 'js': ['content.js'], 'run_at': 'document_start'}]",
+      "expected": "content.js 对普通页面按 <all_urls> 匹配，并在 document_start 注册。"
+    },
+    {
+      "case_id": "M2-03",
+      "title": "关闭扩展时的网络请求基线准备",
+      "status": "OK",
+      "actual": "测试页图片=['five.jpg', 'four.jpg', 'one.jpg', 'three.jpg', 'two.jpg']，引用external.css=True",
+      "expected": "基线页包含 one.jpg 至 five.jpg，并引用 external.css，能够执行扩展开关对比。"
+    },
+    {
+      "case_id": "M2-04",
+      "title": "预取消息发送到请求来源标签页",
+      "status": "NG",
+      "actual": "background.js 使用当前窗口的活动标签页发送 fetch 消息。",
+      "expected": "预取消息必须发送给 details.tabId 指向的请求来源标签页，不能误发给另一活动标签页。"
+    },
+    {
+      "case_id": "M2-05",
+      "title": "url() 引号与空格变体",
+      "status": "OK",
+      "actual": "解析结果=['http://localhost:3000/a.png', 'http://localhost:3000/b.png', 'http://localhost:3000/c.png', 'http://localhost:3000/d.png']",
+      "expected": "a.png 至 d.png 均应得到规范化地址。"
+    },
+    {
+      "case_id": "M2-06",
+      "title": "多行 image-set 倍率候选",
+      "status": "NG",
+      "actual": "解析结果=[]",
+      "expected": "多行 image-set 中三个不带 url() 的候选地址都应被识别。"
+    },
+    {
+      "case_id": "M2-07",
+      "title": "嵌套 url() 与 type() 的 image-set",
+      "status": "OK",
+      "actual": "解析结果=['image1.avif', 'image2.jpg']",
+      "expected": "image1.avif 与 image2.jpg 均应被识别，MIME 提示不得进入 URL。"
+    },
+    {
+      "case_id": "M2-08",
+      "title": "image() 多候选地址",
+      "status": "OK",
+      "actual": "解析结果=['/imagea.jpg', '/fallbacka.jpg']",
+      "expected": "主候选和回退候选均应被单独识别。"
+    },
+    {
+      "case_id": "M2-09",
+      "title": "外链 CSS 媒体分支资源",
+      "status": "OK",
+      "actual": "是否包含three/four=(True, True)",
+      "expected": "three.jpg 与 four.jpg 均应被发现，不受媒体条件影响。"
+    },
+    {
+      "case_id": "M2-10",
+      "title": "外链 CSS 的 @import 资源",
+      "status": "OK",
+      "actual": "解析结果包含/style.css=True",
+      "expected": "@import url('/style.css') 应被发现。"
+    },
+    {
+      "case_id": "M2-11",
+      "title": "外链 CSS 相对 URL 基准路径",
+      "status": "NG",
+      "actual": "当前页面上下文解析为 http://localhost:3000/img/a.png",
+      "expected": "应以 /css/external.css 为基准解析为 http://localhost:3000/css/img/a.png"
+    },
+    {
+      "case_id": "M2-12",
+      "title": "URL 跨响应分块",
+      "status": "NG",
+      "actual": "逐块解析结果=[]",
+      "expected": "跨分块的 /img/split.png 应在响应结束后被完整识别。"
+    },
+    {
+      "case_id": "M2-13",
+      "title": "内联 style 媒体查询资源",
+      "status": "OK",
+      "actual": "解析结果=['/one.jpg', '/two.jpg']",
+      "expected": "one.jpg 与 two.jpg 均应被发现。"
+    },
+    {
+      "case_id": "M2-14",
+      "title": "行内 style 属性资源",
+      "status": "OK",
+      "actual": "解析结果=['/five.jpg']",
+      "expected": "five.jpg 应从 style 属性中被发现。"
+    },
+    {
+      "case_id": "M2-15",
+      "title": "data URL 与空 URL",
+      "status": "NG",
+      "actual": "页面上下文最终地址=['http://localhost:3000/index.html', 'http://localhost:3000/index.html', 'http://localhost:3000/ok.png']",
+      "expected": "data URL 和空 URL 应跳过，只有 /ok.png 被预取。"
+    },
+    {
+      "case_id": "M2-16",
+      "title": "重复 URL 与片段 URL 容错",
+      "status": "NG",
+      "actual": "页面上下文最终地址=['http://localhost:3000/valid.png', 'http://localhost:3000/valid.png', 'http://localhost:3000/index.html#fragment']",
+      "expected": "相同资源只预取一次，片段 URL 不应触发资源请求。"
+    }
+  ]
+}
